@@ -1,0 +1,1 @@
+/* * 「アルゴリズムとデータ構造」 * 大規模行列を扱うクラスの実現 * Hirohito Shibata (hshibata@stf.teu.ac.jp) */class ListItem {    ListItem(int index_p, double value_p) {	index = index_p;	value = value_p;    }    public ListItem next = null;    public int index = -1;    public double value = 0;}
