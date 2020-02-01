@@ -128,7 +128,7 @@ void makeMenu(foodList *timesFoodList, int size, char MDE, menu *foodMenu){
 		printf("ガッツリか少なめどっちがいいですか? ガッツリ:1, 少なめ:2\n");
 		scanf("%d", &Q2);
 
-		//hehe
+		//test
 		//食べ物,飲み物の選定
 		//パン
 		if(Q1 == 1){
