@@ -26,6 +26,7 @@ typedef struct menu
 
 //プロトタイプ宣言
 void eating();
+int GetRandom(int min,int max);
 void setFoodList(foodList *foods, char *name, char *type, char MDE);
 void makeFoodList();
 void makeMenu(foodList *timesFoodList, int size, char MDE, menu *foodMenu);

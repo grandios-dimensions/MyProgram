@@ -6,7 +6,7 @@
 #include "playing.h"
 #include "eating.h"
 
-#define loopNum 10
+#define loopNum 50
 
 void sleeping();
 //*****:機能ごとの境界, -----:関数ごとの境界, .....関数内での境界+インデックスを増やしていく
@@ -65,12 +65,12 @@ void sleeping(){
 	}
 
 	//起きる時間を表示する
-	if(local->tm_min+m > 60){
+	if(local->tm_min+m >= 60){
 		m -= 60;
 		h++;
 	}
 
-	if((local->tm_hour)+h > 24){
+	if((local->tm_hour)+h >= 24){
 		h -= 24;
 	}
 
@@ -83,6 +83,14 @@ void sleeping(){
 
 
 //*****食べる機能について(適切なご飯を提案してくれる)b*****
+
+//*****乱数生成用b_option*****
+int GetRandom(int min,int max)
+{
+	return min + (int)(rand()*(max-min+1.0)/(1.0+RAND_MAX));
+}
+//*****b_option*****
+
 
 //-----foodListに値を設定するb_a-----
 void setFoodList(foodList *foods, char *name, char *type, char MDE){
@@ -115,18 +123,40 @@ void makeFoodList(foodList *foods){
 void makeMenu(foodList *timesFoodList, int size, char MDE, menu *foodMenu){
 
 	//i:カウンタ, Q1,Q2:質問の答え, sFood:0(無し) 1(あり)
+	//fi:foodのインデックス, di:drinkのインデックス
+
 	int i = 0;
 	int sFood = 0, Q1 = 0, Q2 = 0;
+	int fi = 0, di = 0;
+
+	//乱数の種生成
+	srand((unsigned int)time(NULL));
+	//1回目のgetRandomは固定されてしまうため,1度呼び出して正しく乱数が生成されるようにしている
+	GetRandom(0, 0);
+
+	for(i=0; i<size; i++){
+		printf("timesFoodList[%d] = %s\n", i, timesFoodList[i].name);
+	}
 
 	//朝ごはんの場合
 	if(MDE == 'M'){
+		//food:0~8 drink:9~12
 		//2つの質問 Q1:パンorご飯, Q2:ガッツリor少なめ
 		//Q1 パン:1, ご飯:2
 		printf("パンかご飯どっちがいいですか? パン:1, ご飯:2\n");
 		scanf("%d", &Q1);
+		if(Q1 != 1 && Q1 != 2){
+			printf("入力が不正です\n");
+			return;
+		}
 		//Q2 ガッツリ:1, 少なめ:2
 		printf("ガッツリか少なめどっちがいいですか? ガッツリ:1, 少なめ:2\n");
 		scanf("%d", &Q2);
+		if(Q2 != 1 && Q2 != 2){
+			printf("入力が不正です\n");
+			return;
+		}
+
 
 		//test
 		//食べ物,飲み物の選定
@@ -135,32 +165,64 @@ void makeMenu(foodList *timesFoodList, int size, char MDE, menu *foodMenu){
 
 			if(Q2 == 1){
 
+				fi = GetRandom(0, 1);
+
 			}else if(Q2 == 2){
+
+				fi = GetRandom(2, 3);
+
 			}
 
+			//パンのdrinkはjuice「9」で決まり
+			di = 9;
 
 		//ご飯
 		}else if(Q1 == 2){
 
 			if(Q2 == 1){
 
+				sFood = 1;
+				//ご飯なのでインデックスはriceの「4」で確定
+				strncpy(foodMenu->staple_food, timesFoodList[4].name, 50);
+
+				fi = GetRandom(7, 8);
+
+				//飲み物は味噌汁「10」で確定
+				di = 10;
+
+
 			}else if(Q2 == 2){
+
+				fi = GetRandom(5, 6);
+				di = GetRandom(10, 12);
+
 			}
 
 		}
 
-
+		strncpy(foodMenu->main_dish, timesFoodList[fi].name, 50);
+		strncpy(foodMenu->drink, timesFoodList[di].name, 50);
 	}
 
 	//昼ごはんの場合
 	if(MDE == 'D'){
+		//food,0~9 drink,10~12
 		//2つの質問 Q1:高いor安い, Q2:ガッツリorあっさり
 		//Q1 高い:1, 安い:2
 		printf("高いか安いどっちがいいですか? 高い:1, 安い:2\n");
 		scanf("%d", &Q1);
+		if(Q1 != 1 && Q1 != 2){
+			printf("入力が不正です\n");
+			return;
+		}
+
 		//Q2 ガッツリ:1, あっさり:2
 		printf("ガッツリかあっさりどっちがいいですか? ガッツリ:1, あっさり:2\n");
 		scanf("%d", &Q2);
+		if(Q2 != 1 && Q2 != 2){
+			printf("入力が不正です\n");
+			return;
+		}
 
 
 		//食べ物,飲み物の選定
@@ -170,7 +232,11 @@ void makeMenu(foodList *timesFoodList, int size, char MDE, menu *foodMenu){
 
 			if(Q2 == 1){
 
+				fi = GetRandom(0, 2);
+
 			}else if(Q2 == 2){
+
+				fi = GetRandom(3, 4);
 
 			}
 
@@ -179,24 +245,53 @@ void makeMenu(foodList *timesFoodList, int size, char MDE, menu *foodMenu){
 
 			if(Q2 == 1){
 
+				fi = GetRandom(5, 7);
+
 			}else if(Q2 == 2){
+
+				fi = GetRandom(8, 9);
 
 			}
 
 		}
+
+		//パンかハンバーガーの時だけコーヒーも選択肢に
+		if(fi == 0 || fi == 8){
+
+			di = GetRandom(10, 12);
+
+		}else{
+
+			di = GetRandom(11, 12);
+
+		}
+
+		strncpy(foodMenu->main_dish, timesFoodList[fi].name, 50);
+		strncpy(foodMenu->drink, timesFoodList[di].name, 50);
 
 	}
 
 
 	//夜ごはんの場合
 	if(MDE == 'E'){
+		//food,0~9 drink,10~11
 		//2つの質問 Q1:肉or魚, Q2:ガッツリorあっさり
 		//Q1 肉:1, 魚:2
 		printf("肉か魚どっちがいいですか? 肉:1, 魚:2\n");
 		scanf("%d", &Q1);
+		if(Q1 != 1 && Q1 != 2){
+			printf("入力が不正です\n");
+			return;
+		}
+
+
 		//Q2 ガッツリ:1, あっさり:2
 		printf("ガッツリかあっさりどっちがいいですか? ガッツリ:1, あっさり:2\n");
 		scanf("%d", &Q2);
+		if(Q2 != 1 && Q2 != 2){
+			printf("入力が不正です\n");
+			return;
+		}
 
 
 		//食べ物,飲み物の選定
@@ -206,7 +301,11 @@ void makeMenu(foodList *timesFoodList, int size, char MDE, menu *foodMenu){
 
 			if(Q2 == 1){
 
+				fi = GetRandom(0, 2);
+
 			}else if(Q2 == 2){
+
+				fi = GetRandom(3, 5);
 
 			}
 
@@ -215,21 +314,23 @@ void makeMenu(foodList *timesFoodList, int size, char MDE, menu *foodMenu){
 
 			if(Q2 == 1){
 
+				fi = GetRandom(6, 7);
+
 			}else if(Q2 == 2){
+
+				fi = GetRandom(8, 9);
 
 			}
 
 		}
 
+		//飲み物の選択
+		di = GetRandom(10, 11);
+
+		strncpy(foodMenu->main_dish, timesFoodList[fi].name, 50);
+		strncpy(foodMenu->drink, timesFoodList[di].name, 50);
 
 	}
-
-
-	//値の代入****************
-	strcpy(foodMenu->staple_food, timesFoodList[i].name);
-	strcpy(foodMenu->main_dish, timesFoodList[i].name);
-	strcpy(foodMenu->drink, timesFoodList[i].name);
-
 
 	//.....ご飯の提案.....
 	printf("ご提案のご飯は ↓ になります\n");
@@ -264,8 +365,8 @@ void eating(){
 	setFoodList(&foods[6], "ochazuke", "food", 'M');
 	setFoodList(&foods[7], "salmon", "food", 'M');
 	setFoodList(&foods[8], "Fried_egg", "food", 'M');
-	setFoodList(&foods[9], "miso_soup", "drink", 'M');
-	setFoodList(&foods[10], "juice", "drink", 'M');
+	setFoodList(&foods[9], "juice", "drink", 'M');
+	setFoodList(&foods[10], "miso_soup", "drink", 'M');
 	setFoodList(&foods[11], "green_tea", "drink", 'M');
 	setFoodList(&foods[12], "barley_tea", "drink", 'M');
 
@@ -357,14 +458,13 @@ void eating(){
 		for(i = 0; i <= morningFin-morningStart; i++){
 
 			timesFoodList[i] = foods[j];
-			printf("[%d] food = [%s], type = [%s], MDE = [%c]\n",i, timesFoodList[i].name, timesFoodList[i].type, timesFoodList[i].MDE);
 			j++;
 		}
 
 		makeMenu(&timesFoodList[0], morningFin-morningStart, timesFoodList[0].MDE, &foodMenu);
 
 	}
-	else if(local->tm_hour >= 12 && local->tm_hour <= 14){
+	else if(local->tm_hour >= 12 && local->tm_hour <= 14|| local->tm_hour >= 23){
 		//11~14時
 		printf("今は%d時ですので昼ごはんです\n",local->tm_hour);
 
@@ -374,7 +474,6 @@ void eating(){
 		for(i = 0; i <= DayFin-DayStart; i++){
 
 			timesFoodList[i] = foods[j];
-			printf("[%d] food = [%s], type = [%s], MDE = [%c]\n",i, timesFoodList[i].name, timesFoodList[i].type, timesFoodList[i].MDE);
 			j++;
 		}
 
@@ -391,7 +490,6 @@ void eating(){
 		for(i = 0; i <= eveningFin-eveningStart; i++){
 
 			timesFoodList[i] = foods[j];
-			printf("[%d] food = [%s], type = [%s], MDE = [%c]\n",i, timesFoodList[i].name, timesFoodList[i].type, timesFoodList[i].MDE);
 			j++;
 		}
 
@@ -423,8 +521,10 @@ void playing(){
   scanf("%1d", &hHnum);
 
   if(hHnum != 0 && hHnum != 2 && hHnum != 5){
+
     printf("不正な入力です\n");
-    exit(0);
+    return;
+
   }
 
   srand((unsigned int)time(NULL));
@@ -456,11 +556,13 @@ int main(void){
 
 	//後にwhileに変える
 	for(i=0; i<loopNum; i++){
+
 		printf("select number : 1.sleep、2.eat、3.play、4.bye\n");
 		printf("please enter num :");
 		scanf("%1d", &select);
 
 		switch(select){
+
 			case 1:
 			sleeping();
 			printf("\n");
