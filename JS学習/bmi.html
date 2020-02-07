@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>JavaScripts_sample</title>
+    </head>
+    <body>
+        <script>
+            document.write("<h1>ようこそ世界へ！</h1>");
+            document.title = "xmalin";
+            var height, weight, bmi;
+
+            height = prompt("身長を入れてください", 150);
+            weight = prompt("体重を入れてください", 150)
+
+            bmi = weight / Math.pow((height/100), 2);
+            
+            document.write("君のbmiは ["+bmi+"] だよ！")
+        </script>
+    </body>
+</html>
