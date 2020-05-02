@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>入力フォーム</title>
+</head>
+
+<body>
+    <h3>アニメの登録</h3>
+    入力フォーム<br>
+    <form  method="post" action="add.php">        
+        アイコン:<input type="text" name="aicon" required><br>
+        アニメ名:<input type="text" name="title" required><br>
+        OP:<input type="text" name="OP" required><br>
+        Ed:<input type="text" name="ED" required><br>
+        primeのリンク<input type="text" name="viewLink" required><br>
+        <!--twitter<input type="text" name="twitterLink" required><br>
+        pixiv<input type="text" name="pixivLink" required><br>
+        -->
+        <input type="submit" value="送信">
+    </form>
+ 
+    <audio src="[曲名].mp3" autoplay loop></audio>
+    <p>
+        <a href="../home.html">
+            <button type="button">Homeに戻る</button>
+        </a>
+    </p>
+</body>
+</html>
